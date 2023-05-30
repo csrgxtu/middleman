@@ -13,8 +13,9 @@ if int(VERSION[0]) > 6:
 else:
     from mitmproxy.net.http import Headers
 
-# your remote servers here
-scf_servers = []
+# set your TOKEN AND SERVERS here
+SCF_TOKEN = ''
+SCF_SERVERS = []
 
 css = """pre {
     white-space: pre-wrap;       /* Since CSS 2.1 */
@@ -27,7 +28,7 @@ css = """pre {
 
 def request(flow: mitmproxy.http.HTTPFlow):
     mitmproxy.ctx.start_ts = int(time.time() * 1000)
-    scf_server = choice(scf_servers)
+    scf_server = choice(SCF_SERVERS)
     request = flow.request
     mitmproxy.ctx.origin_url = request.pretty_url
     data = {
@@ -35,6 +36,7 @@ def request(flow: mitmproxy.http.HTTPFlow):
         "url": request.pretty_url,
         "headers": dict(request.headers),
         "body": b64encode(request.raw_content).decode('utf-8'),
+        "SCF_TOKEN": SCF_TOKEN,
     }
     flow.request = flow.request.make(
         "POST",
